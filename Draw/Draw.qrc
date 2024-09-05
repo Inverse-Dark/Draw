@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Resources/INVDK.ico</file>
+        <file>Resources/INVERSEDARK.ico</file>
+    </qresource>
+</RCC>
