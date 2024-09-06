@@ -51,7 +51,7 @@ void ColorPickerWidget::mouseMoveEvent(QMouseEvent *)
     int y = QCursor::pos().y() + 1;
 
     QScreen *screen = qApp->primaryScreen();
-    QPixmap pixmap = screen->grabWindow(0, x, y, 2, 2);
+    QPixmap pixmap = screen->grabWindow(0, x, y, 1, 1);
 
     if (pixmap.isNull()) {
         return;

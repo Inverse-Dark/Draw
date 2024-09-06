@@ -36,6 +36,12 @@ private slots:
     // QWidget interface
     void on_pushButtonColorPicker_clicked();
 
+    void on_pushButtonBrush_clicked();
+
+    void on_pushButtonPen_clicked();
+
+    void on_pushButtonEraser_clicked();
+
 protected:
     void resizeEvent(QResizeEvent *event) override;
 

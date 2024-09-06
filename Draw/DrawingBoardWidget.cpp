@@ -21,8 +21,8 @@ DrawingBoardWidget::DrawingBoardWidget(QWidget *parent) :
     drawColor = 0;
 
     // 设置格子数量
-    rows = 32;
-    cols = 32;
+    rows = 8;
+    cols = 16;
 
     // 设置格子的像素
     pixel = 10;
@@ -31,6 +31,8 @@ DrawingBoardWidget::DrawingBoardWidget(QWidget *parent) :
 
     isMove = false;
     isDraw = false;
+    // 默认模式是笔
+    drawMode = 1;
 
     data.resize(cols*rows);
     // 初始化画布
@@ -120,7 +122,21 @@ void DrawingBoardWidget::mousePressEvent(QMouseEvent *event)
             // 获取列数
             int bJ = blockPos.x()/blockWidth/* + (blockPos.x()%blockWidth?1:0)*/;
 
-            data[bI*rows+bJ] = drawColor;
+            switch(drawMode)
+            {
+            case 1: // 笔
+                data[bI*rows+bJ] = drawColor;
+                break;
+            case 2: // 橡皮擦
+                // 擦成白色，并非透明色
+                data[bI*rows+bJ] = 0xffffffff;
+                break;
+            case 3: // 填充
+                // 存储原始颜色
+                QRgb srcRgb = data[bI*rows+bJ];
+                Brush(bJ,bI,srcRgb);
+                break;
+            }
         }
     }else if(event->button()==Qt::MouseButton::RightButton){
         // 按下右键，开始移动
@@ -142,7 +158,6 @@ void DrawingBoardWidget::mouseReleaseEvent(QMouseEvent *event)
 
 void DrawingBoardWidget::mouseMoveEvent(QMouseEvent *event)
 {
-
     // 获取当前鼠标所在坐标
     QPoint pos = event->pos();
     // 获取画布左上角的点
@@ -175,7 +190,18 @@ void DrawingBoardWidget::mouseMoveEvent(QMouseEvent *event)
         if(bI >= 0 && bJ >= 0 &&
             bI < cols && bJ < rows)
         {
-            data[bI*rows+bJ] = drawColor;
+            switch(drawMode)
+            {
+            case 1: // 笔
+                data[bI*rows+bJ] = drawColor;
+                break;
+            case 2: // 橡皮擦
+                // 擦成白色，并非透明色
+                data[bI*rows+bJ] = 0xffffffff;
+                break;
+            case 3: // 填充
+                break;
+            }
         }
     }
 
@@ -274,4 +300,33 @@ int DrawingBoardWidget::getCols() const
 void DrawingBoardWidget::setCols(int newCols)
 {
     cols = newCols;
+}
+
+void DrawingBoardWidget::setDrawMode(int drawMode)
+{
+    this->drawMode = drawMode;
+}
+
+void DrawingBoardWidget::Brush(int x, int y, QRgb srcRgb)
+{
+    // 检查坐标是否在绘图板的边界内
+    if (x < 0 || x >= rows || y < 0 || y >= cols) {
+        return;
+    }
+
+    // 点击的坐标所在的颜色
+    QRgb curRgb = data[y * rows + x];
+    // 如果当前坐标的颜色与填充的颜色一致，那么返回
+    if(curRgb == drawColor) return;
+    // 如果当前坐标的颜色与被填充的颜色不一致，那么返回
+    if (curRgb != srcRgb) return;
+
+    // 更换新的颜色
+    data[y*rows+x] = drawColor;
+
+    // 循环递归4个方向
+    Brush(x + 1, y, srcRgb);
+    Brush(x - 1, y, srcRgb);
+    Brush(x, y + 1, srcRgb);
+    Brush(x, y - 1, srcRgb);
 }

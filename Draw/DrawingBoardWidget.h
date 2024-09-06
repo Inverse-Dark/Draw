@@ -27,6 +27,8 @@ public:
     const QRgb &getDrawColor() const;
     void setDrawColor(const QRgb &newDrawColor);
 
+    void setDrawMode(int drawMode);
+
 protected:
     void paintEvent(QPaintEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
@@ -39,13 +41,12 @@ signals:
     void boardPoint(QPoint pos);
 
 private:
+    void Brush(int x, int y, QRgb srcRgb);
+
+private:
     Ui::DrawingBoardWidget *ui;
 
     QPainter* m_painter;    // 画家
-   // QPen* m_pen;            // 画笔
-   // QBrush m_brush;           // 画刷
-
-    //QPalette m_pal; // 调色板
 
     QRect drawBoard;   // 画布大小
     double scale;  // 画布显示比例
@@ -55,6 +56,7 @@ private:
     int cols;   // 列
 
     bool isDraw;            // 左键点击，绘画
+    int drawMode;           // 1.绘画 2.橡皮擦 3.填充
     bool isMove;            // 右键点击，移动画布
     QPoint lastPos;      // 按下的坐标
 
